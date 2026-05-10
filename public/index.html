@@ -62,11 +62,7 @@
         </div>
       </div>
 
-      <div class="hidden md:flex items-center gap-3">
-        <div class="px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-semibold">
-          Powered by Gemini AI
-        </div>
-      </div>
+      
 
     </div>
   </header>
@@ -154,7 +150,12 @@
               type="file"
               accept="image/*"
               class="hidden"
+              
             />
+            <img
+  id="previewImage"
+  class="hidden mt-5 rounded-2xl w-full max-h-72 object-cover border border-slate-200"
+ />
 
           </label>
 
@@ -345,12 +346,31 @@
   <footer class="border-t border-slate-200 bg-white">
     <div class="max-w-6xl mx-auto px-6 py-8 text-center text-slate-500 text-sm">
 
-      NutriSnap © 2026 • Desenvolvido com IA
+      NutriSnap © 2026 - Desenvolvido por Nutricionistas
 
     </div>
   </footer>
 
   <script>
+    const imageInput = document.getElementById('imageInput');
+const previewImage = document.getElementById('previewImage');
+
+imageInput.addEventListener('change', () => {
+
+  const file = imageInput.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    previewImage.src = e.target.result;
+    previewImage.classList.remove('hidden');
+  };
+
+  reader.readAsDataURL(file);
+
+});
 
     async function analyzeImage() {
 
@@ -413,10 +433,19 @@
             </div>
 
             <div class="text-right">
-              <p class="font-bold text-orange-500">${item.calorias}</p>
-              <p class="text-sm text-slate-500">${item.proteina}</p>
-            </div>
-          </div>
+  <p class="font-bold text-orange-500">
+    ${item.calorias}
+  </p>
+
+  <p class="text-sm text-blue-500 font-semibold">
+    Proteína: ${item.proteina || '-'}
+  </p>
+
+  <p class="text-sm text-yellow-600 font-semibold">
+    Carbo: ${item.carboidrato || '-'}
+  </p>
+</div>
+          
         `).join('');
 
         document.getElementById('result').classList.remove('hidden');
