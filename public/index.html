@@ -85,9 +85,75 @@
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
     }
   </style>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAw54P5Cc-TaAKLbkrCU43oLjnCZfAAaoQ",
+    authDomain: "nutrisnap-21100.firebaseapp.com",
+    projectId: "nutrisnap-21100",
+    storageBucket: "nutrisnap-21100.firebasestorage.app",
+    messagingSenderId: "586786823373",
+    appId: "1:586786823373:web:da36d466af2222b3cadd84"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  window.loginGoogle = async function () {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  window.logoutGoogle = async function () {
+    await signOut(auth);
+  };
+
+  onAuthStateChanged(auth, (user) => {
+    const loginBtn = document.getElementById('loginBtn');
+    const userInfo = document.getElementById('userInfo');
+
+    if (user) {
+      loginBtn.classList.add('hidden');
+
+      userInfo.innerHTML = `
+        <div class="flex items-center gap-3">
+          <img src="${user.photoURL}" class="w-10 h-10 rounded-full">
+          <div>
+            <p class="font-bold">${user.displayName}</p>
+            <p class="text-sm opacity-70">${user.email}</p>
+          </div>
+
+          <button
+            onclick="logoutGoogle()"
+            class="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold"
+          >
+            Sair
+          </button>
+        </div>
+      `;
+    } else {
+      loginBtn.classList.remove('hidden');
+      userInfo.innerHTML = '';
+    }
+  });
+</script>
 </head>
 
 <body class="min-h-screen">
+  <div id="userInfo"></div>
 
   <header class="theme-header w-full border-b sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -107,7 +173,13 @@
       >
         🌙 Tema escuro
       </button>
-
+<button
+  id="loginBtn"
+  onclick="loginGoogle()"
+  class="px-5 py-2 rounded-2xl bg-green-500 text-white font-bold shadow-lg"
+>
+  Entrar com Google
+</button>
     </div>
   </header>
 
