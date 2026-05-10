@@ -12,10 +12,14 @@ const upload = multer({
 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const path = require('path');
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.post('/analyze', upload.single('image'), async (req, res) => {
   try {
