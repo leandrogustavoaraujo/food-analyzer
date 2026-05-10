@@ -21,17 +21,17 @@
       --card: #ffffff;
       --soft: #f8fafc;
       --border: #e2e8f0;
-      --header: rgba(255,255,255,.85);
+      --header: rgba(255,255,255,.9);
     }
 
-    [data-theme="dark"] {
+    html[data-theme="dark"] {
       --bg: #020617;
       --text: #f8fafc;
       --muted: #94a3b8;
       --card: #0f172a;
       --soft: #111827;
-      --border: #1e293b;
-      --header: rgba(15,23,42,.85);
+      --border: #334155;
+      --header: rgba(15,23,42,.92);
     }
 
     body {
@@ -50,6 +50,7 @@
     .theme-soft {
       background: var(--soft);
       border-color: var(--border);
+      color: var(--text);
     }
 
     .theme-muted {
@@ -77,52 +78,12 @@
         transform: translateY(0);
       }
     }
-    html[data-theme="dark"] body {
-  background: #020617 !important;
-  color: #f8fafc !important;
-}
 
-html[data-theme="dark"] .bg-white,
-html[data-theme="dark"] .bg-white\/80 {
-  background-color: #0f172a !important;
-}
-
-html[data-theme="dark"] .bg-slate-50,
-html[data-theme="dark"] .bg-slate-100 {
-  background-color: #111827 !important;
-}
-
-html[data-theme="dark"] .border-slate-200,
-html[data-theme="dark"] .border-slate-300 {
-  border-color: #334155 !important;
-}
-
-html[data-theme="dark"] .text-slate-800,
-html[data-theme="dark"] .text-slate-700 {
-  color: #f8fafc !important;
-}
-
-html[data-theme="dark"] .text-slate-600,
-html[data-theme="dark"] .text-slate-500 {
-  color: #94a3b8 !important;
-}
-
-html[data-theme="dark"] header {
-  background: rgba(15, 23, 42, 0.9) !important;
-  border-color: #334155 !important;
-}
-
-html[data-theme="dark"] #themeToggle {
-  background: #1e293b !important;
-  color: #f8fafc !important;
-  border-color: #475569 !important;
-}
-
-html[data-theme="dark"] .shadow-sm,
-html[data-theme="dark"] .shadow-lg,
-html[data-theme="dark"] .shadow-2xl {
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
-}
+    html[data-theme="dark"] .shadow-sm,
+    html[data-theme="dark"] .shadow-lg,
+    html[data-theme="dark"] .shadow-2xl {
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
+    }
   </style>
 </head>
 
@@ -142,7 +103,7 @@ html[data-theme="dark"] .shadow-2xl {
 
       <button
         id="themeToggle"
-        class="px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-700 text-sm font-semibold shadow-sm hover:bg-slate-100 transition"
+        class="px-4 py-2 rounded-full border text-sm font-semibold shadow-sm transition"
       >
         🌙 Tema escuro
       </button>
@@ -168,7 +129,7 @@ html[data-theme="dark"] .shadow-2xl {
 
         <div class="flex flex-wrap gap-4">
           <div class="theme-card border px-5 py-4 rounded-2xl shadow-sm">
-            <div class="text-2xl font-bold text-green-600">IA</div>
+            <div class="text-2xl font-bold text-green-600">01</div>
             <div class="theme-muted text-sm">Reconhecimento inteligente</div>
           </div>
 
@@ -376,19 +337,19 @@ html[data-theme="dark"] .shadow-2xl {
         const json = await response.json();
 
         if (!json.success) {
-          throw new Error(json.error);
+          throw new Error(json.error || 'Erro ao analisar imagem.');
         }
 
         const d = json.data;
 
-        document.getElementById('pratName').textContent = d.prato;
-        document.getElementById('calorias').textContent = d.calorias_total;
-        document.getElementById('proteinas').textContent = d.proteinas_total;
-        document.getElementById('observacao').textContent = d.observacao;
+        document.getElementById('pratName').textContent = d.prato || '-';
+        document.getElementById('calorias').textContent = d.calorias_total || '-';
+        document.getElementById('proteinas').textContent = d.proteinas_total || '-';
+        document.getElementById('observacao').textContent = d.observacao || '-';
 
         const confiancaEl = document.getElementById('confianca');
 
-        confiancaEl.textContent = `Confiança ${d.confianca}`;
+        confiancaEl.textContent = `Confiança ${d.confianca || '-'}`;
 
         confiancaEl.className =
           d.confianca === 'alta'
@@ -399,16 +360,16 @@ html[data-theme="dark"] .shadow-2xl {
 
         const itensList = document.getElementById('itensList');
 
-        itensList.innerHTML = d.itens.map(item => `
+        itensList.innerHTML = (d.itens || []).map(item => `
           <div class="theme-card border rounded-2xl p-4">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <p class="font-bold">${item.nome}</p>
-                <p class="theme-muted text-sm">${item.quantidade}</p>
+                <p class="font-bold">${item.nome || '-'}</p>
+                <p class="theme-muted text-sm">${item.quantidade || '-'}</p>
               </div>
 
               <p class="font-extrabold text-orange-500 whitespace-nowrap">
-                ${item.calorias} kcal
+                ${item.calorias || '-'} kcal
               </p>
             </div>
 
@@ -431,28 +392,6 @@ html[data-theme="dark"] .shadow-2xl {
         button.innerText = 'Analisar Refeição';
       }
     }
-    const themeToggle = document.getElementById('themeToggle');
-
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-
-  if (theme === 'dark') {
-    themeToggle.textContent = '☀️ Tema claro';
-  } else {
-    themeToggle.textContent = '🌙 Tema escuro';
-  }
-
-  localStorage.setItem('nutrisnap-theme', theme);
-}
-
-const savedTheme = localStorage.getItem('nutrisnap-theme') || 'light';
-applyTheme(savedTheme);
-
-themeToggle.addEventListener('click', () => {
-  const currentTheme = document.documentElement.getAttribute('data-theme');
-
-  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
-});
   </script>
 
 </body>
