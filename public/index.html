@@ -41,42 +41,16 @@
       transition: background .25s ease, color .25s ease;
     }
 
-    .theme-card {
-      background: var(--card);
-      border-color: var(--border);
-      color: var(--text);
-    }
+    .theme-card { background: var(--card); border-color: var(--border); color: var(--text); }
+    .theme-soft { background: var(--soft); border-color: var(--border); color: var(--text); }
+    .theme-muted { color: var(--muted); }
+    .theme-header { background: var(--header); border-color: var(--border); backdrop-filter: blur(10px); }
 
-    .theme-soft {
-      background: var(--soft);
-      border-color: var(--border);
-      color: var(--text);
-    }
-
-    .theme-muted {
-      color: var(--muted);
-    }
-
-    .theme-header {
-      background: var(--header);
-      border-color: var(--border);
-      backdrop-filter: blur(10px);
-    }
-
-    .fade-up {
-      animation: fadeUp .4s ease;
-    }
+    .fade-up { animation: fadeUp .4s ease; }
 
     @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     html[data-theme="dark"] .shadow-sm,
@@ -85,71 +59,128 @@
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
     }
   </style>
+
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-  import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithPopup,
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAw54P5Cc-TaAKLbkrCU43oLjnCZfAAaoQ",
-    authDomain: "nutrisnap-21100.firebaseapp.com",
-    projectId: "nutrisnap-21100",
-    storageBucket: "nutrisnap-21100.firebasestorage.app",
-    messagingSenderId: "586786823373",
-    appId: "1:586786823373:web:da36d466af2222b3cadd84"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAw54P5Cc-TaAKLbkrCU43oLjnCZfAAaoQ",
+      authDomain: "nutrisnap-21100.firebaseapp.com",
+      projectId: "nutrisnap-21100",
+      storageBucket: "nutrisnap-21100.firebasestorage.app",
+      messagingSenderId: "586786823373",
+      appId: "1:586786823373:web:da36d466af2222b3cadd84"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-  window.loginGoogle = async function () {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      alert(error.message);
+    window.currentUser = null;
+
+    window.loginGoogle = async function () {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        alert("Firebase: " + error.message);
+      }
+    };
+
+    window.logoutGoogle = async function () {
+      await signOut(auth);
+    };
+
+    function lockApp() {
+      const imageInput = document.getElementById('imageInput');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      const uploadArea = document.getElementById('uploadArea');
+      const lockMessage = document.getElementById('lockMessage');
+
+      if (imageInput) imageInput.disabled = true;
+
+      if (analyzeBtn) {
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerText = 'Entre com Google para analisar';
+        analyzeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+
+      if (uploadArea) {
+        uploadArea.classList.add('opacity-60', 'cursor-not-allowed');
+      }
+
+      if (lockMessage) {
+        lockMessage.classList.remove('hidden');
+      }
     }
-  };
 
-  window.logoutGoogle = async function () {
-    await signOut(auth);
-  };
+    function unlockApp() {
+      const imageInput = document.getElementById('imageInput');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      const uploadArea = document.getElementById('uploadArea');
+      const lockMessage = document.getElementById('lockMessage');
 
-  onAuthStateChanged(auth, (user) => {
-    const loginBtn = document.getElementById('loginBtn');
-    const userInfo = document.getElementById('userInfo');
+      if (imageInput) imageInput.disabled = false;
 
-    if (user) {
-      loginBtn.classList.add('hidden');
+      if (analyzeBtn) {
+        analyzeBtn.disabled = false;
+        analyzeBtn.innerText = 'Analisar Refeição';
+        analyzeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
 
-      userInfo.innerHTML = `
-        <div class="flex items-center gap-3">
-          <img src="${user.photoURL}" class="w-10 h-10 rounded-full">
-          <div>
-            <p class="font-bold">${user.displayName}</p>
-            <p class="text-sm opacity-70">${user.email}</p>
+      if (uploadArea) {
+        uploadArea.classList.remove('opacity-60', 'cursor-not-allowed');
+      }
+
+      if (lockMessage) {
+        lockMessage.classList.add('hidden');
+      }
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      const loginBtn = document.getElementById('loginBtn');
+      const userInfo = document.getElementById('userInfo');
+
+      if (user) {
+        window.currentUser = user;
+
+        loginBtn.classList.add('hidden');
+
+        userInfo.innerHTML = `
+          <div class="flex items-center gap-3 px-4 py-2 theme-card border-b">
+            <img src="${user.photoURL}" class="w-10 h-10 rounded-full">
+            <div>
+              <p class="font-bold">${user.displayName}</p>
+              <p class="text-sm opacity-70">${user.email}</p>
+            </div>
+
+            <button
+              onclick="logoutGoogle()"
+              class="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold"
+            >
+              Sair
+            </button>
           </div>
+        `;
 
-          <button
-            onclick="logoutGoogle()"
-            class="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold"
-          >
-            Sair
-          </button>
-        </div>
-      `;
-    } else {
-      loginBtn.classList.remove('hidden');
-      userInfo.innerHTML = '';
-    }
-  });
-</script>
+        unlockApp();
+      } else {
+        window.currentUser = null;
+
+        loginBtn.classList.remove('hidden');
+        userInfo.innerHTML = '';
+
+        lockApp();
+      }
+    });
+  </script>
 </head>
 
 <body class="min-h-screen">
@@ -167,19 +198,23 @@
         </div>
       </div>
 
-      <button
-        id="themeToggle"
-        class="px-4 py-2 rounded-full border text-sm font-semibold shadow-sm transition"
-      >
-        🌙 Tema escuro
-      </button>
-<button
-  id="loginBtn"
-  onclick="loginGoogle()"
-  class="px-5 py-2 rounded-2xl bg-green-500 text-white font-bold shadow-lg"
->
-  Entrar com Google
-</button>
+      <div class="flex items-center gap-3">
+        <button
+          id="themeToggle"
+          class="px-4 py-2 rounded-full border text-sm font-semibold shadow-sm transition"
+        >
+          🌙 Tema escuro
+        </button>
+
+        <button
+          id="loginBtn"
+          onclick="loginGoogle()"
+          class="px-5 py-2 rounded-2xl bg-green-500 text-white font-bold shadow-lg"
+        >
+          Entrar com Google
+        </button>
+      </div>
+
     </div>
   </header>
 
@@ -225,7 +260,15 @@
             <p class="theme-muted">Faça upload da imagem da refeição</p>
           </div>
 
+          <div
+            id="lockMessage"
+            class="mb-5 rounded-2xl border border-yellow-300 bg-yellow-50 text-yellow-800 px-4 py-3 text-sm font-semibold"
+          >
+            Entre com Google para liberar o envio da foto.
+          </div>
+
           <label
+            id="uploadArea"
             for="imageInput"
             class="theme-soft border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500 transition-all"
           >
@@ -241,6 +284,7 @@
               type="file"
               accept="image/*"
               class="hidden"
+              disabled
             />
 
             <img
@@ -252,9 +296,10 @@
           <button
             id="analyzeBtn"
             onclick="analyzeImage()"
-            class="w-full mt-6 bg-green-500 hover:bg-green-600 transition-all text-white font-bold py-5 rounded-2xl text-lg shadow-lg"
+            disabled
+            class="w-full mt-6 bg-green-500 hover:bg-green-600 transition-all text-white font-bold py-5 rounded-2xl text-lg shadow-lg opacity-50 cursor-not-allowed"
           >
-            Analisar Refeição
+            Entre com Google para analisar
           </button>
 
           <div id="loading" class="hidden mt-6 theme-soft rounded-2xl p-5 text-center">
@@ -368,6 +413,11 @@
     });
 
     imageInput.addEventListener('change', () => {
+      if (!window.currentUser) {
+        alert('Entre com Google para enviar uma foto.');
+        return;
+      }
+
       const file = imageInput.files[0];
 
       if (!file) return;
@@ -383,6 +433,11 @@
     });
 
     async function analyzeImage() {
+      if (!window.currentUser) {
+        alert('Entre com Google para analisar a refeição.');
+        return;
+      }
+
       const file = imageInput.files[0];
 
       if (!file) {
@@ -460,8 +515,13 @@
       } finally {
         document.getElementById('loading').classList.add('hidden');
 
-        button.disabled = false;
-        button.innerText = 'Analisar Refeição';
+        if (window.currentUser) {
+          button.disabled = false;
+          button.innerText = 'Analisar Refeição';
+        } else {
+          button.disabled = true;
+          button.innerText = 'Entre com Google para analisar';
+        }
       }
     }
   </script>
