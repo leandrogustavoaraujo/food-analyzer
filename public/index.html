@@ -11,13 +11,55 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --bg: #f5f7fb;
+      --text: #0f172a;
+      --muted: #64748b;
+      --card: #ffffff;
+      --soft: #f8fafc;
+      --border: #e2e8f0;
+      --header: rgba(255,255,255,.85);
+    }
+
+    [data-theme="dark"] {
+      --bg: #020617;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --card: #0f172a;
+      --soft: #111827;
+      --border: #1e293b;
+      --header: rgba(15,23,42,.85);
+    }
+
     body {
       font-family: 'Inter', sans-serif;
-      background: #f5f7fb;
+      background: var(--bg);
+      color: var(--text);
+      transition: background .25s ease, color .25s ease;
+    }
+
+    .theme-card {
+      background: var(--card);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .theme-soft {
+      background: var(--soft);
+      border-color: var(--border);
+    }
+
+    .theme-muted {
+      color: var(--muted);
+    }
+
+    .theme-header {
+      background: var(--header);
+      border-color: var(--border);
+      backdrop-filter: blur(10px);
     }
 
     .fade-up {
@@ -29,141 +71,151 @@
         opacity: 0;
         transform: translateY(10px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
+    html[data-theme="dark"] body {
+  background: #020617 !important;
+  color: #f8fafc !important;
+}
 
-    .glass {
-      backdrop-filter: blur(10px);
-    }
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] .bg-white\/80 {
+  background-color: #0f172a !important;
+}
+
+html[data-theme="dark"] .bg-slate-50,
+html[data-theme="dark"] .bg-slate-100 {
+  background-color: #111827 !important;
+}
+
+html[data-theme="dark"] .border-slate-200,
+html[data-theme="dark"] .border-slate-300 {
+  border-color: #334155 !important;
+}
+
+html[data-theme="dark"] .text-slate-800,
+html[data-theme="dark"] .text-slate-700 {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .text-slate-600,
+html[data-theme="dark"] .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] header {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border-color: #334155 !important;
+}
+
+html[data-theme="dark"] #themeToggle {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+html[data-theme="dark"] .shadow-sm,
+html[data-theme="dark"] .shadow-lg,
+html[data-theme="dark"] .shadow-2xl {
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
+}
   </style>
 </head>
 
-<body class="min-h-screen text-slate-800">
+<body class="min-h-screen">
 
-  <!-- HEADER -->
-  <header class="w-full border-b border-slate-200 bg-white/80 glass sticky top-0 z-50">
+  <header class="theme-header w-full border-b sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
 
       <div class="flex items-center gap-3">
         <img src="/logo.png" alt="NutriSnap" class="w-11 h-11 rounded-2xl object-cover shadow-lg" />
 
         <div>
-          <h1 class="font-extrabold text-xl">
-            NutriSnap
-          </h1>
-
-          <p class="text-sm text-slate-500">
-            IA para análise nutricional
-          </p>
+          <h1 class="font-extrabold text-xl">NutriSnap</h1>
+          <p class="theme-muted text-sm">Análise nutricional inteligente</p>
         </div>
       </div>
-<button
-  id="themeToggle"
-  class="px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-700 text-sm font-semibold shadow-sm hover:bg-slate-100 transition"
->
-  🌙 Tema escuro
-</button>
-      
+
+      <button
+        id="themeToggle"
+        class="px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-700 text-sm font-semibold shadow-sm hover:bg-slate-100 transition"
+      >
+        🌙 Tema escuro
+      </button>
 
     </div>
   </header>
 
-  <!-- HERO -->
   <section class="max-w-6xl mx-auto px-6 pt-16 pb-20">
-
     <div class="grid lg:grid-cols-2 gap-12 items-center">
 
-      <!-- LEFT -->
       <div class="fade-up">
-
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium text-sm mb-6">
-          ⚡ Inteligência Artificial Nutricional
+          ⚡ Reconhecimento alimentar inteligente
         </div>
 
         <h2 class="text-5xl leading-tight font-extrabold mb-6">
-          Descubra calorias e macronutrientes apenas com uma foto
+          Descubra calorias e proteínas apenas com uma foto
         </h2>
 
-        <p class="text-slate-600 text-lg leading-relaxed mb-8">
-          Tire uma foto da refeição e receba instantaneamente uma análise completa com calorias, proteínas e observações nutricionais utilizando IA avançada.
+        <p class="theme-muted text-lg leading-relaxed mb-8">
+          Tire uma foto da refeição e receba instantaneamente uma análise com calorias, proteínas e observações nutricionais por tecnologia avançada de reconhecimento alimentar.
         </p>
 
         <div class="flex flex-wrap gap-4">
-          <div class="bg-white border border-slate-200 px-5 py-4 rounded-2xl shadow-sm">
+          <div class="theme-card border px-5 py-4 rounded-2xl shadow-sm">
             <div class="text-2xl font-bold text-green-600">IA</div>
-            <div class="text-sm text-slate-500">
-              Reconhecimento inteligente
-            </div>
+            <div class="theme-muted text-sm">Reconhecimento inteligente</div>
           </div>
 
-          <div class="bg-white border border-slate-200 px-5 py-4 rounded-2xl shadow-sm">
+          <div class="theme-card border px-5 py-4 rounded-2xl shadow-sm">
             <div class="text-2xl font-bold text-blue-600">⚡</div>
-            <div class="text-sm text-slate-500">
-              Resultado instantâneo
-            </div>
+            <div class="theme-muted text-sm">Resultado instantâneo</div>
           </div>
 
-          <div class="bg-white border border-slate-200 px-5 py-4 rounded-2xl shadow-sm">
+          <div class="theme-card border px-5 py-4 rounded-2xl shadow-sm">
             <div class="text-2xl font-bold text-purple-600">📊</div>
-            <div class="text-sm text-slate-500">
-              Análise nutricional
-            </div>
+            <div class="theme-muted text-sm">Análise nutricional</div>
           </div>
         </div>
-
       </div>
 
-      <!-- RIGHT -->
       <div class="fade-up">
-
-        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 p-7">
+        <div class="theme-card rounded-3xl shadow-2xl border p-7">
 
           <div class="mb-6">
-            <h3 class="text-2xl font-bold mb-2">
-              Analisar refeição
-            </h3>
-
-            <p class="text-slate-500">
-              Faça upload da imagem da refeição
-            </p>
+            <h3 class="text-2xl font-bold mb-2">Analisar refeição</h3>
+            <p class="theme-muted">Faça upload da imagem da refeição</p>
           </div>
 
-          <!-- UPLOAD -->
           <label
             for="imageInput"
-            class="border-2 border-dashed border-slate-300 rounded-3xl p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500 transition-all bg-slate-50"
+            class="theme-soft border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500 transition-all"
           >
-
             <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center text-4xl mb-5">
               📸
             </div>
 
-            <h4 class="font-bold text-xl mb-2">
-              Tirar foto ou fazer upload
-            </h4>
-
-            <p class="text-slate-500">
-              JPG, PNG ou WEBP
-            </p>
+            <h4 class="font-bold text-xl mb-2">Tirar foto ou fazer upload</h4>
+            <p class="theme-muted">JPG, PNG ou WEBP</p>
 
             <input
               id="imageInput"
               type="file"
               accept="image/*"
               class="hidden"
-              
             />
-            <img
-  id="previewImage"
-  class="hidden mt-5 rounded-2xl w-full max-h-72 object-cover border border-slate-200"
- />
 
+            <img
+              id="previewImage"
+              class="hidden mt-5 rounded-2xl w-full max-h-72 object-cover border border-slate-200"
+            />
           </label>
 
-          <!-- BUTTON -->
           <button
             id="analyzeBtn"
             onclick="analyzeImage()"
@@ -172,213 +224,132 @@
             Analisar Refeição
           </button>
 
-          <!-- LOADING -->
-          <div
-            id="loading"
-            class="hidden mt-6 bg-slate-100 rounded-2xl p-5 text-center"
-          >
-
+          <div id="loading" class="hidden mt-6 theme-soft rounded-2xl p-5 text-center">
             <div class="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-
-            <p class="font-semibold text-slate-700">
-              Analisando imagem...
-            </p>
-
+            <p class="font-semibold">Analisando imagem...</p>
           </div>
 
-          <!-- RESULT -->
-          <div
-            id="result"
-            class="hidden mt-6 fade-up"
-          >
+          <div id="result" class="hidden mt-6 fade-up">
+            <div class="theme-soft border rounded-3xl p-6">
 
-            <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6">
-
-              <div class="flex items-center justify-between mb-6">
-
+              <div class="flex items-center justify-between gap-4 mb-6">
                 <div>
-                  <p class="text-slate-500 text-sm">
-                    Refeição identificada
-                  </p>
-
-                  <h3
-                    id="pratName"
-                    class="text-2xl font-extrabold"
-                  >
-                    -
-                  </h3>
+                  <p class="theme-muted text-sm">Refeição identificada</p>
+                  <h3 id="pratName" class="text-2xl font-extrabold">-</h3>
                 </div>
 
-                <div
-                  id="confianca"
-                  class="px-4 py-2 rounded-full text-sm font-bold bg-green-100 text-green-700"
-                >
+                <div id="confianca" class="px-4 py-2 rounded-full text-sm font-bold bg-green-100 text-green-700">
                   -
                 </div>
-
               </div>
 
-              <!-- CARDS -->
               <div class="grid grid-cols-2 gap-4 mb-5">
-
-                <div class="bg-white rounded-2xl p-5 border border-slate-200">
-                  <p class="text-slate-500 text-sm mb-1">
-                    Calorias
-                  </p>
-
-                  <h4
-                    id="calorias"
-                    class="text-3xl font-extrabold text-orange-500"
-                  >
-                    -
-                  </h4>
+                <div class="theme-card rounded-2xl p-5 border">
+                  <p class="theme-muted text-sm mb-1">Calorias</p>
+                  <h4 id="calorias" class="text-3xl font-extrabold text-orange-500">-</h4>
                 </div>
 
-                <div class="bg-white rounded-2xl p-5 border border-slate-200">
-                  <p class="text-slate-500 text-sm mb-1">
-                    Proteínas
-                  </p>
-
-                  <h4
-                    id="proteinas"
-                    class="text-3xl font-extrabold text-blue-500"
-                  >
-                    -
-                  </h4>
+                <div class="theme-card rounded-2xl p-5 border">
+                  <p class="theme-muted text-sm mb-1">Proteínas</p>
+                  <h4 id="proteinas" class="text-3xl font-extrabold text-blue-500">-</h4>
                 </div>
-
               </div>
 
-              <!-- OBS -->
-              <div class="bg-white rounded-2xl p-5 border border-slate-200 mb-5">
-                <p class="text-slate-500 text-sm mb-2">
-                  Observações
-                </p>
-
-                <p
-                  id="observacao"
-                  class="leading-relaxed text-slate-700"
-                >
-                  -
-                </p>
+              <div class="theme-card rounded-2xl p-5 border mb-5">
+                <p class="theme-muted text-sm mb-2">Observações</p>
+                <p id="observacao" class="leading-relaxed">-</p>
               </div>
 
-              <!-- ITENS -->
-              <div class="bg-white rounded-2xl p-5 border border-slate-200">
-
-                <p class="text-slate-500 text-sm mb-4">
-                  Itens identificados
-                </p>
-
-                <div
-                  id="itensList"
-                  class="space-y-3"
-                ></div>
-
+              <div class="theme-card rounded-2xl p-5 border">
+                <p class="theme-muted text-sm mb-4">Itens identificados</p>
+                <div id="itensList" class="space-y-3"></div>
               </div>
 
             </div>
-
           </div>
 
         </div>
-
       </div>
 
     </div>
-
   </section>
 
-  <!-- HOW -->
   <section class="max-w-6xl mx-auto px-6 pb-24">
-
     <div class="text-center mb-14">
-
-      <h2 class="text-4xl font-extrabold mb-4">
-        Como funciona
-      </h2>
-
-      <p class="text-slate-500 text-lg">
-        Processo simples e rápido
-      </p>
-
+      <h2 class="text-4xl font-extrabold mb-4">Como funciona</h2>
+      <p class="theme-muted text-lg">Processo simples e rápido</p>
     </div>
 
     <div class="grid md:grid-cols-3 gap-6">
-
-      <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+      <div class="theme-card rounded-3xl p-8 border shadow-sm">
         <div class="text-5xl mb-5">📸</div>
-
-        <h3 class="font-bold text-xl mb-3">
-          Tire uma foto
-        </h3>
-
-        <p class="text-slate-500 leading-relaxed">
-          Faça upload da imagem da sua refeição.
-        </p>
+        <h3 class="font-bold text-xl mb-3">Tire uma foto</h3>
+        <p class="theme-muted leading-relaxed">Faça upload da imagem da sua refeição.</p>
       </div>
 
-      <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
-        <div class="text-5xl mb-5">🤖</div>
-
-        <h3 class="font-bold text-xl mb-3">
-          IA analisa
-        </h3>
-
-        <p class="text-slate-500 leading-relaxed">
-          A inteligência artificial identifica os alimentos automaticamente.
-        </p>
+      <div class="theme-card rounded-3xl p-8 border shadow-sm">
+        <div class="text-5xl mb-5">🔎</div>
+        <h3 class="font-bold text-xl mb-3">Sistema analisa</h3>
+        <p class="theme-muted leading-relaxed">A tecnologia identifica os alimentos automaticamente.</p>
       </div>
 
-      <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+      <div class="theme-card rounded-3xl p-8 border shadow-sm">
         <div class="text-5xl mb-5">📊</div>
-
-        <h3 class="font-bold text-xl mb-3">
-          Veja resultados
-        </h3>
-
-        <p class="text-slate-500 leading-relaxed">
-          Receba calorias, proteínas e observações nutricionais.
-        </p>
+        <h3 class="font-bold text-xl mb-3">Veja resultados</h3>
+        <p class="theme-muted leading-relaxed">Receba calorias, proteínas e observações nutricionais.</p>
       </div>
-
     </div>
-
   </section>
 
-  <!-- FOOTER -->
-  <footer class="border-t border-slate-200 bg-white">
-    <div class="max-w-6xl mx-auto px-6 py-8 text-center text-slate-500 text-sm">
-
-      NutriSnap © 2026 - Desenvolvido por Nutricionistas
-
+  <footer class="theme-card border-t">
+    <div class="max-w-6xl mx-auto px-6 py-8 text-center theme-muted text-sm">
+      NutriSnap © 2026
     </div>
   </footer>
 
   <script>
     const imageInput = document.getElementById('imageInput');
-const previewImage = document.getElementById('previewImage');
+    const previewImage = document.getElementById('previewImage');
+    const themeToggle = document.getElementById('themeToggle');
 
-imageInput.addEventListener('change', () => {
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
 
-  const file = imageInput.files[0];
+      if (theme === 'dark') {
+        themeToggle.textContent = '☀️ Tema claro';
+        themeToggle.className = 'px-4 py-2 rounded-full border border-slate-700 bg-slate-900 text-white text-sm font-semibold shadow-sm hover:bg-slate-800 transition';
+      } else {
+        themeToggle.textContent = '🌙 Tema escuro';
+        themeToggle.className = 'px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-700 text-sm font-semibold shadow-sm hover:bg-slate-100 transition';
+      }
 
-  if (!file) return;
+      localStorage.setItem('nutrisnap-theme', theme);
+    }
 
-  const reader = new FileReader();
+    const savedTheme = localStorage.getItem('nutrisnap-theme') || 'light';
+    applyTheme(savedTheme);
 
-  reader.onload = (e) => {
-    previewImage.src = e.target.result;
-    previewImage.classList.remove('hidden');
-  };
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
 
-  reader.readAsDataURL(file);
+    imageInput.addEventListener('change', () => {
+      const file = imageInput.files[0];
 
-});
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        previewImage.src = e.target.result;
+        previewImage.classList.remove('hidden');
+      };
+
+      reader.readAsDataURL(file);
+    });
 
     async function analyzeImage() {
-
-      const imageInput = document.getElementById('imageInput');
       const file = imageInput.files[0];
 
       if (!file) {
@@ -394,7 +365,6 @@ imageInput.addEventListener('change', () => {
       button.innerText = 'Analisando...';
 
       try {
-
         const formData = new FormData();
         formData.append('image', file);
 
@@ -430,54 +400,45 @@ imageInput.addEventListener('change', () => {
         const itensList = document.getElementById('itensList');
 
         itensList.innerHTML = d.itens.map(item => `
-  <div class="border border-slate-200 rounded-2xl p-4 bg-white">
-    <div class="flex items-start justify-between gap-4">
-      <div>
-        <p class="font-bold text-slate-800">${item.nome}</p>
-        <p class="text-sm text-slate-500">${item.quantidade}</p>
-      </div>
+          <div class="theme-card border rounded-2xl p-4">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="font-bold">${item.nome}</p>
+                <p class="theme-muted text-sm">${item.quantidade}</p>
+              </div>
 
-      <p class="font-extrabold text-orange-500 whitespace-nowrap">
-        ${item.calorias} kcal
-      </p>
-    </div>
+              <p class="font-extrabold text-orange-500 whitespace-nowrap">
+                ${item.calorias} kcal
+              </p>
+            </div>
 
-    <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
-      <div class="bg-blue-50 text-blue-700 rounded-xl px-3 py-2 font-semibold">
-        Proteína: ${item.proteinas || item.proteina || '-'}g
-      </div>
-
-      
-    </div>
-  </div>
-`).join('');
+            <div class="mt-3">
+              <div class="bg-blue-50 text-blue-700 rounded-xl px-3 py-2 text-sm font-semibold">
+                Proteína: ${item.proteinas || item.proteina || '-'}g
+              </div>
+            </div>
+          </div>
+        `).join('');
 
         document.getElementById('result').classList.remove('hidden');
 
       } catch (error) {
-
         alert(error.message || 'Erro ao analisar imagem.');
-
       } finally {
-
         document.getElementById('loading').classList.add('hidden');
 
         button.disabled = false;
         button.innerText = 'Analisar Refeição';
-
       }
-
     }
-const themeToggle = document.getElementById('themeToggle');
+    const themeToggle = document.getElementById('themeToggle');
 
 function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+
   if (theme === 'dark') {
-    document.body.classList.add('bg-slate-950', 'text-white');
-    document.body.classList.remove('bg-slate-50', 'text-slate-800');
     themeToggle.textContent = '☀️ Tema claro';
   } else {
-    document.body.classList.remove('bg-slate-950', 'text-white');
-    document.body.classList.add('bg-slate-50', 'text-slate-800');
     themeToggle.textContent = '🌙 Tema escuro';
   }
 
@@ -488,8 +449,9 @@ const savedTheme = localStorage.getItem('nutrisnap-theme') || 'light';
 applyTheme(savedTheme);
 
 themeToggle.addEventListener('click', () => {
-  const isDark = document.body.classList.contains('bg-slate-950');
-  applyTheme(isDark ? 'light' : 'dark');
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
 });
   </script>
 
