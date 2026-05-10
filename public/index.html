@@ -61,7 +61,12 @@
           </p>
         </div>
       </div>
-
+<button
+  id="themeToggle"
+  class="px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-700 text-sm font-semibold shadow-sm hover:bg-slate-100 transition"
+>
+  🌙 Tema escuro
+</button>
       
 
     </div>
@@ -443,9 +448,7 @@ imageInput.addEventListener('change', () => {
         Proteína: ${item.proteinas || item.proteina || '-'}g
       </div>
 
-      <div class="bg-yellow-50 text-yellow-700 rounded-xl px-3 py-2 font-semibold">
-        Carbo: ${item.carboidrato || '-'}
-      </div>
+      
     </div>
   </div>
 `).join('');
@@ -466,7 +469,29 @@ imageInput.addEventListener('change', () => {
       }
 
     }
+const themeToggle = document.getElementById('themeToggle');
 
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.body.classList.add('bg-slate-950', 'text-white');
+    document.body.classList.remove('bg-slate-50', 'text-slate-800');
+    themeToggle.textContent = '☀️ Tema claro';
+  } else {
+    document.body.classList.remove('bg-slate-950', 'text-white');
+    document.body.classList.add('bg-slate-50', 'text-slate-800');
+    themeToggle.textContent = '🌙 Tema escuro';
+  }
+
+  localStorage.setItem('nutrisnap-theme', theme);
+}
+
+const savedTheme = localStorage.getItem('nutrisnap-theme') || 'light';
+applyTheme(savedTheme);
+
+themeToggle.addEventListener('click', () => {
+  const isDark = document.body.classList.contains('bg-slate-950');
+  applyTheme(isDark ? 'light' : 'dark');
+});
   </script>
 
 </body>
