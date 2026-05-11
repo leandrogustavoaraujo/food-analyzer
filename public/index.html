@@ -70,11 +70,12 @@
       onAuthStateChanged,
       signOut
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
     import {
-  getFirestore,
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+      getFirestore,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAw54P5Cc-TaAKLbkrCU43oLjnCZfAAaoQ",
@@ -92,16 +93,20 @@
 
     window.currentUser = null;
 
-    window.loginGoogle = async function () {
+    window.loginGoogle = async () => {
       try {
         await signInWithPopup(auth, provider);
       } catch (error) {
-        alert("Firebase: " + error.message);
+        alert("Erro no login: " + error.message);
       }
     };
 
-    window.logoutGoogle = async function () {
-      await signOut(auth);
+    window.logoutGoogle = async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        alert("Erro ao sair: " + error.message);
+      }
     };
 
     function lockApp() {
@@ -150,52 +155,80 @@
       }
     }
 
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginBtn = document.getElementById('loginBtn');
+
+      if (loginBtn) {
+        loginBtn.addEventListener('click', () => {
+          window.loginGoogle();
+        });
+      }
+
+      lockApp();
+    });
+
     onAuthStateChanged(auth, async (user) => {
-  const loginBtn = document.getElementById('loginBtn');
-  const userInfo = document.getElementById('userInfo');
+      const loginBtn = document.getElementById('loginBtn');
+      const userInfo = document.getElementById('userInfo');
 
-  if (user) {
-    const userRef = doc(db, "authorizedUsers", user.email);
-    const userSnap = await getDoc(userRef);
+      if (!loginBtn || !userInfo) return;
 
-    if (!userSnap.exists() || !userSnap.data().authorized) {
-      alert("Seu acesso ainda não foi liberado.");
-      await signOut(auth);
-      return;
-    }
+      if (user) {
+        try {
+          const userRef = doc(db, "authorizedUsers", user.email);
+          const userSnap = await getDoc(userRef);
 
-    window.currentUser = user;
+          if (!userSnap.exists() || !userSnap.data().authorized) {
+            window.currentUser = null;
+            lockApp();
 
-    loginBtn.classList.add('hidden');
+            alert("Seu acesso ainda não foi liberado.");
+            await signOut(auth);
+            return;
+          }
 
-    userInfo.innerHTML = `
-      <div class="flex items-center gap-3 px-4 py-2 theme-card border-b">
-        <img src="${user.photoURL}" class="w-10 h-10 rounded-full">
-        <div>
-          <p class="font-bold">${user.displayName}</p>
-          <p class="text-sm opacity-70">${user.email}</p>
-        </div>
+          window.currentUser = user;
 
-        <button
-          onclick="logoutGoogle()"
-          class="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold"
-        >
-          Sair
-        </button>
-      </div>
-    `;
+          loginBtn.classList.add('hidden');
 
-    unlockApp();
+          userInfo.innerHTML = `
+            <div class="flex items-center justify-between gap-3 px-4 py-3 theme-card border-b">
+              <div class="flex items-center gap-3">
+                <img src="${user.photoURL}" class="w-10 h-10 rounded-full">
+                <div>
+                  <p class="font-bold">${user.displayName}</p>
+                  <p class="text-sm opacity-70">${user.email}</p>
+                </div>
+              </div>
 
-  } else {
-    window.currentUser = null;
+              <button
+                onclick="logoutGoogle()"
+                class="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold"
+              >
+                Sair
+              </button>
+            </div>
+          `;
 
-    loginBtn.classList.remove('hidden');
-    userInfo.innerHTML = '';
+          unlockApp();
 
-    lockApp();
-  }
-});
+        } catch (error) {
+          window.currentUser = null;
+          lockApp();
+
+          alert("Erro ao verificar autorização: " + error.message);
+          await signOut(auth);
+        }
+
+      } else {
+        window.currentUser = null;
+
+        loginBtn.classList.remove('hidden');
+        userInfo.innerHTML = '';
+
+        lockApp();
+      }
+    });
   </script>
 </head>
 
@@ -224,7 +257,7 @@
 
         <button
           id="loginBtn"
-          onclick="loginGoogle()"
+          type="button"
           class="px-5 py-2 rounded-2xl bg-green-500 text-white font-bold shadow-lg"
         >
           Entrar com Google
