@@ -6,12 +6,18 @@
 
   <title>NutriSnap</title>
   <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#22c55e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="NutriSnap" />
+  <link rel="apple-touch-icon" href="/logo.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -36,7 +42,7 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--bg);
+      background: radial-gradient(circle at top, rgba(34,197,94,.10), transparent 35%), var(--bg);
       color: var(--text);
       transition: background .25s ease, color .25s ease;
     }
@@ -44,19 +50,27 @@
     .theme-card { background: var(--card); border-color: var(--border); color: var(--text); }
     .theme-soft { background: var(--soft); border-color: var(--border); color: var(--text); }
     .theme-muted { color: var(--muted); }
-    .theme-header { background: var(--header); border-color: var(--border); backdrop-filter: blur(10px); }
+    .theme-header { background: var(--header); border-color: var(--border); backdrop-filter: blur(14px); }
 
-    .fade-up { animation: fadeUp .4s ease; }
+    .fade-up { animation: fadeUp .35s ease; }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
+    .progress-fill {
+      transition: width .6s ease;
+    }
+
     html[data-theme="dark"] .shadow-sm,
     html[data-theme="dark"] .shadow-lg,
     html[data-theme="dark"] .shadow-2xl {
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
+    }
+
+    input, select {
+      outline: none;
     }
   </style>
 
@@ -123,13 +137,8 @@
         analyzeBtn.classList.add('opacity-50', 'cursor-not-allowed');
       }
 
-      if (uploadArea) {
-        uploadArea.classList.add('opacity-60', 'cursor-not-allowed');
-      }
-
-      if (lockMessage) {
-        lockMessage.classList.remove('hidden');
-      }
+      if (uploadArea) uploadArea.classList.add('opacity-60', 'cursor-not-allowed');
+      if (lockMessage) lockMessage.classList.remove('hidden');
     }
 
     function unlockApp() {
@@ -146,13 +155,8 @@
         analyzeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
       }
 
-      if (uploadArea) {
-        uploadArea.classList.remove('opacity-60', 'cursor-not-allowed');
-      }
-
-      if (lockMessage) {
-        lockMessage.classList.add('hidden');
-      }
+      if (uploadArea) uploadArea.classList.remove('opacity-60', 'cursor-not-allowed');
+      if (lockMessage) lockMessage.classList.add('hidden');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -188,29 +192,34 @@
           }
 
           window.currentUser = user;
-
           loginBtn.classList.add('hidden');
 
           userInfo.innerHTML = `
-            <div class="flex items-center justify-between gap-3 px-4 py-3 theme-card border-b">
-              <div class="flex items-center gap-3">
-                <img src="${user.photoURL}" class="w-10 h-10 rounded-full">
-                <div>
-                  <p class="font-bold">${user.displayName}</p>
-                  <p class="text-sm opacity-70">${user.email}</p>
+            <div class="theme-card border-b">
+              <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <img src="${user.photoURL}" class="w-10 h-10 rounded-full">
+                  <div>
+                    <p class="font-bold text-sm">${user.displayName}</p>
+                    <p class="text-xs opacity-70">${user.email}</p>
+                  </div>
                 </div>
-              </div>
 
-              <button
-                onclick="logoutGoogle()"
-                class="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold"
-              >
-                Sair
-              </button>
+                <button
+                  onclick="logoutGoogle()"
+                  class="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold text-sm"
+                >
+                  Sair
+                </button>
+              </div>
             </div>
           `;
 
           unlockApp();
+
+          if (window.initializeNutriSnap) {
+            window.initializeNutriSnap();
+          }
 
         } catch (error) {
           window.currentUser = null;
@@ -236,197 +245,355 @@
   <div id="userInfo"></div>
 
   <header class="theme-header w-full border-b sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
 
       <div class="flex items-center gap-3">
         <img src="/logo.png" alt="NutriSnap" class="w-11 h-11 rounded-2xl object-cover shadow-lg" />
 
         <div>
           <h1 class="font-extrabold text-xl">NutriSnap</h1>
-          <p class="theme-muted text-sm">Análise nutricional inteligente</p>
+          <p class="theme-muted text-xs sm:text-sm">Coach nutricional inteligente</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
         <button
           id="themeToggle"
-          class="px-4 py-2 rounded-full border text-sm font-semibold shadow-sm transition"
+          class="px-3 py-2 rounded-full border text-xs sm:text-sm font-semibold shadow-sm transition"
         >
-          🌙 Tema escuro
+          🌙
         </button>
 
         <button
           id="loginBtn"
           type="button"
-          class="px-5 py-2 rounded-2xl bg-green-500 text-white font-bold shadow-lg"
+          class="px-4 py-2 rounded-2xl bg-green-500 text-white font-bold shadow-lg text-xs sm:text-sm"
         >
-          Entrar com Google
+          Entrar
         </button>
       </div>
 
     </div>
   </header>
 
-  <section class="max-w-6xl mx-auto px-6 pt-16 pb-20">
-    <div class="grid lg:grid-cols-2 gap-12 items-center">
+  <main class="max-w-6xl mx-auto px-5 pt-6 pb-24">
 
-      <div class="fade-up">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium text-sm mb-6">
-          ⚡ Reconhecimento alimentar inteligente
+    <section class="mb-6">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <div>
+          <p class="theme-muted text-sm">Hoje</p>
+          <h2 class="text-3xl sm:text-4xl font-black tracking-tight">
+            Seu progresso diário
+          </h2>
         </div>
 
-        <h2 class="text-5xl leading-tight font-extrabold mb-6">
-          Descubra calorias e proteínas apenas com uma foto
-        </h2>
+        <button
+          onclick="openGoalsModal()"
+          class="theme-card border px-4 py-3 rounded-2xl text-sm font-bold shadow-sm"
+        >
+          ⚙️ Metas
+        </button>
+      </div>
 
-        <p class="theme-muted text-lg leading-relaxed mb-8">
-          Tire uma foto da refeição e receba instantaneamente uma análise com calorias, proteínas e observações nutricionais por tecnologia avançada de reconhecimento alimentar.
-        </p>
+      <div class="grid lg:grid-cols-3 gap-5">
+        <div class="lg:col-span-2 theme-card border rounded-[2rem] p-6 shadow-2xl fade-up">
+          <div class="flex items-start justify-between gap-4 mb-6">
+            <div>
+              <p class="theme-muted text-sm mb-1">Calorias consumidas</p>
+              <h3 class="text-4xl font-black">
+                <span id="dashboardCalories">0</span>
+                <span class="text-base theme-muted font-bold">/ <span id="dashboardGoal">2200</span> kcal</span>
+              </h3>
+            </div>
 
-        <div class="flex flex-wrap gap-4">
-          <div class="theme-card border px-5 py-4 rounded-2xl shadow-sm">
-            <div class="text-2xl font-bold text-green-600">01</div>
-            <div class="theme-muted text-sm">Reconhecimento inteligente</div>
+            <div class="px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-black">
+              <span id="dashboardPercent">0</span>%
+            </div>
           </div>
 
-          <div class="theme-card border px-5 py-4 rounded-2xl shadow-sm">
-            <div class="text-2xl font-bold text-blue-600">⚡</div>
-            <div class="theme-muted text-sm">Resultado instantâneo</div>
+          <div class="w-full h-4 rounded-full bg-slate-200 overflow-hidden mb-4">
+            <div id="calorieProgress" class="progress-fill h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-600" style="width: 0%"></div>
           </div>
 
-          <div class="theme-card border px-5 py-4 rounded-2xl shadow-sm">
-            <div class="text-2xl font-bold text-purple-600">📊</div>
-            <div class="theme-muted text-sm">Análise nutricional</div>
+          <div class="flex items-center justify-between gap-3">
+            <p id="smartFeedback" class="theme-muted text-sm font-semibold">
+              Entre com Google e registre sua primeira refeição.
+            </p>
+
+            <p class="text-sm font-black">
+              <span id="remainingCalories">2200</span> kcal restantes
+            </p>
+          </div>
+        </div>
+
+        <div class="theme-card border rounded-[2rem] p-6 shadow-lg fade-up">
+          <p class="theme-muted text-sm mb-2">Sequência</p>
+          <h3 class="text-4xl font-black mb-2">🔥 <span id="streakDays">0</span></h3>
+          <p class="theme-muted text-sm">dias registrando refeições</p>
+
+          <div class="mt-6 theme-soft border rounded-2xl p-4">
+            <p class="text-sm font-bold mb-1">Status do dia</p>
+            <p id="dayStatus" class="theme-muted text-sm">Aguardando primeira análise.</p>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="fade-up">
-        <div class="theme-card rounded-3xl shadow-2xl border p-7">
+    <section class="mb-6">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="theme-card border rounded-3xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <p class="font-black">Proteínas</p>
+            <p class="text-blue-500 font-black"><span id="proteinCurrent">0</span>g / <span id="proteinGoal">180</span>g</p>
+          </div>
+          <div class="w-full h-3 rounded-full bg-slate-200 overflow-hidden">
+            <div id="proteinProgress" class="progress-fill h-full rounded-full bg-blue-500" style="width: 0%"></div>
+          </div>
+        </div>
 
-          <div class="mb-6">
-            <h3 class="text-2xl font-bold mb-2">Analisar refeição</h3>
-            <p class="theme-muted">Faça upload da imagem da refeição</p>
+        <div class="theme-card border rounded-3xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <p class="font-black">Carboidratos</p>
+            <p class="text-yellow-500 font-black"><span id="carbsCurrent">0</span>g / <span id="carbsGoal">250</span>g</p>
+          </div>
+          <div class="w-full h-3 rounded-full bg-slate-200 overflow-hidden">
+            <div id="carbsProgress" class="progress-fill h-full rounded-full bg-yellow-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="theme-card border rounded-3xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <p class="font-black">Gorduras</p>
+            <p class="text-purple-500 font-black"><span id="fatCurrent">0</span>g / <span id="fatGoal">70</span>g</p>
+          </div>
+          <div class="w-full h-3 rounded-full bg-slate-200 overflow-hidden">
+            <div id="fatProgress" class="progress-fill h-full rounded-full bg-purple-500" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid lg:grid-cols-5 gap-6">
+      <div class="lg:col-span-2 theme-card rounded-[2rem] shadow-2xl border p-6 fade-up">
+
+        <div class="mb-5">
+          <h3 class="text-2xl font-black mb-1">Analisar refeição</h3>
+          <p class="theme-muted text-sm">Envie uma foto para registrar automaticamente no seu dia.</p>
+        </div>
+
+        <div
+          id="lockMessage"
+          class="mb-5 rounded-2xl border border-yellow-300 bg-yellow-50 text-yellow-800 px-4 py-3 text-sm font-semibold"
+        >
+          Entre com Google para liberar o envio da foto.
+        </div>
+
+        <label
+          id="uploadArea"
+          for="imageInput"
+          class="theme-soft border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500 transition-all"
+        >
+          <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center text-4xl mb-5">
+            📸
           </div>
 
-          <div
-            id="lockMessage"
-            class="mb-5 rounded-2xl border border-yellow-300 bg-yellow-50 text-yellow-800 px-4 py-3 text-sm font-semibold"
-          >
-            Entre com Google para liberar o envio da foto.
-          </div>
+          <h4 class="font-black text-xl mb-2">Tirar foto ou fazer upload</h4>
+          <p class="theme-muted text-sm">JPG, PNG ou WEBP</p>
 
-          <label
-            id="uploadArea"
-            for="imageInput"
-            class="theme-soft border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500 transition-all"
-          >
-            <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center text-4xl mb-5">
-              📸
-            </div>
+          <input
+            id="imageInput"
+            type="file"
+            accept="image/*"
+            class="hidden"
+            disabled
+          />
 
-            <h4 class="font-bold text-xl mb-2">Tirar foto ou fazer upload</h4>
-            <p class="theme-muted">JPG, PNG ou WEBP</p>
+          <img
+            id="previewImage"
+            class="hidden mt-5 rounded-3xl w-full max-h-72 object-cover border border-slate-200"
+          />
+        </label>
 
-            <input
-              id="imageInput"
-              type="file"
-              accept="image/*"
-              class="hidden"
-              disabled
-            />
-
-            <img
-              id="previewImage"
-              class="hidden mt-5 rounded-2xl w-full max-h-72 object-cover border border-slate-200"
-            />
-          </label>
+        <div class="mt-5 grid grid-cols-2 gap-3">
+          <select id="mealType" class="theme-soft border rounded-2xl px-4 py-4 font-bold">
+            <option value="Café da manhã">Café da manhã</option>
+            <option value="Almoço" selected>Almoço</option>
+            <option value="Jantar">Jantar</option>
+            <option value="Lanche">Lanche</option>
+            <option value="Outros">Outros</option>
+          </select>
 
           <button
             id="analyzeBtn"
             onclick="analyzeImage()"
             disabled
-            class="w-full mt-6 bg-green-500 hover:bg-green-600 transition-all text-white font-bold py-5 rounded-2xl text-lg shadow-lg opacity-50 cursor-not-allowed"
+            class="bg-green-500 hover:bg-green-600 transition-all text-white font-black py-4 rounded-2xl shadow-lg opacity-50 cursor-not-allowed"
           >
-            Entre com Google para analisar
+            Entre com Google
           </button>
+        </div>
 
-          <div id="loading" class="hidden mt-6 theme-soft rounded-2xl p-5 text-center">
-            <div class="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p class="font-semibold">Analisando imagem...</p>
-          </div>
+        <div id="loading" class="hidden mt-6 theme-soft rounded-3xl p-5 text-center">
+          <div class="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p class="font-black">Analisando imagem...</p>
+          <p class="theme-muted text-sm mt-1">Identificando alimentos e calculando macros.</p>
+        </div>
 
-          <div id="result" class="hidden mt-6 fade-up">
-            <div class="theme-soft border rounded-3xl p-6">
+        <div id="result" class="hidden mt-6 fade-up">
+          <div class="theme-soft border rounded-3xl p-5">
 
-              <div class="flex items-center justify-between gap-4 mb-6">
-                <div>
-                  <p class="theme-muted text-sm">Refeição identificada</p>
-                  <h3 id="pratName" class="text-2xl font-extrabold">-</h3>
-                </div>
-
-                <div id="confianca" class="px-4 py-2 rounded-full text-sm font-bold bg-green-100 text-green-700">
-                  -
-                </div>
+            <div class="flex items-center justify-between gap-4 mb-5">
+              <div>
+                <p class="theme-muted text-sm">Refeição identificada</p>
+                <h3 id="pratName" class="text-2xl font-black">-</h3>
               </div>
 
-              <div class="grid grid-cols-2 gap-4 mb-5">
-                <div class="theme-card rounded-2xl p-5 border">
-                  <p class="theme-muted text-sm mb-1">Calorias</p>
-                  <h4 id="calorias" class="text-3xl font-extrabold text-orange-500">-</h4>
-                </div>
-
-                <div class="theme-card rounded-2xl p-5 border">
-                  <p class="theme-muted text-sm mb-1">Proteínas</p>
-                  <h4 id="proteinas" class="text-3xl font-extrabold text-blue-500">-</h4>
-                </div>
+              <div id="confianca" class="px-4 py-2 rounded-full text-sm font-bold bg-green-100 text-green-700">
+                -
               </div>
+            </div>
 
-              <div class="theme-card rounded-2xl p-5 border mb-5">
-                <p class="theme-muted text-sm mb-2">Observações</p>
-                <p id="observacao" class="leading-relaxed">-</p>
+            <div class="grid grid-cols-2 gap-4 mb-5">
+              <div class="theme-card rounded-2xl p-5 border">
+                <p class="theme-muted text-sm mb-1">Calorias</p>
+                <h4 id="calorias" class="text-3xl font-black text-orange-500">-</h4>
               </div>
 
               <div class="theme-card rounded-2xl p-5 border">
-                <p class="theme-muted text-sm mb-4">Itens identificados</p>
-                <div id="itensList" class="space-y-3"></div>
+                <p class="theme-muted text-sm mb-1">Proteínas</p>
+                <h4 id="proteinas" class="text-3xl font-black text-blue-500">-</h4>
               </div>
-
             </div>
-          </div>
 
+            <div class="theme-card rounded-2xl p-5 border mb-5">
+              <p class="theme-muted text-sm mb-2">Feedback</p>
+              <p id="observacao" class="leading-relaxed">-</p>
+            </div>
+
+            <div class="theme-card rounded-2xl p-5 border">
+              <p class="theme-muted text-sm mb-4">Itens identificados</p>
+              <div id="itensList" class="space-y-3"></div>
+            </div>
+
+          </div>
         </div>
       </div>
 
-    </div>
-  </section>
+      <div class="lg:col-span-3 theme-card border rounded-[2rem] p-6 shadow-2xl fade-up">
+        <div class="flex items-center justify-between gap-3 mb-5">
+          <div>
+            <h3 class="text-2xl font-black">Histórico de hoje</h3>
+            <p class="theme-muted text-sm">Suas refeições registradas automaticamente.</p>
+          </div>
 
-  <section class="max-w-6xl mx-auto px-6 pb-24">
-    <div class="text-center mb-14">
-      <h2 class="text-4xl font-extrabold mb-4">Como funciona</h2>
-      <p class="theme-muted text-lg">Processo simples e rápido</p>
-    </div>
+          <button
+            onclick="clearMeals()"
+            class="theme-soft border px-4 py-3 rounded-2xl text-sm font-bold"
+          >
+            Limpar
+          </button>
+        </div>
 
-    <div class="grid md:grid-cols-3 gap-6">
-      <div class="theme-card rounded-3xl p-8 border shadow-sm">
-        <div class="text-5xl mb-5">📸</div>
-        <h3 class="font-bold text-xl mb-3">Tire uma foto</h3>
-        <p class="theme-muted leading-relaxed">Faça upload da imagem da sua refeição.</p>
+        <div id="mealsList" class="space-y-4"></div>
+
+        <div id="emptyMeals" class="theme-soft border rounded-3xl p-8 text-center">
+          <div class="text-5xl mb-4">🍽️</div>
+          <h4 class="font-black text-xl mb-2">Nenhuma refeição ainda</h4>
+          <p class="theme-muted">Analise uma foto para começar seu acompanhamento diário.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="goalsModal" class="hidden fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm px-5 py-8 overflow-y-auto">
+    <div class="max-w-xl mx-auto theme-card border rounded-[2rem] p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 class="text-2xl font-black">Configurar metas</h3>
+          <p class="theme-muted text-sm">Defina seus objetivos diários.</p>
+        </div>
+
+        <button onclick="closeGoalsModal()" class="theme-soft border rounded-2xl px-4 py-3 font-black">
+          ✕
+        </button>
       </div>
 
-      <div class="theme-card rounded-3xl p-8 border shadow-sm">
-        <div class="text-5xl mb-5">🔎</div>
-        <h3 class="font-bold text-xl mb-3">Sistema analisa</h3>
-        <p class="theme-muted leading-relaxed">A tecnologia identifica os alimentos automaticamente.</p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="theme-muted text-sm font-bold">Objetivo</label>
+          <select id="goalObjective" class="w-full theme-soft border rounded-2xl px-4 py-3 mt-2">
+            <option value="cutting">Perder gordura</option>
+            <option value="maintenance">Manter peso</option>
+            <option value="bulking">Ganhar massa</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="theme-muted text-sm font-bold">Sexo</label>
+          <select id="goalSex" class="w-full theme-soft border rounded-2xl px-4 py-3 mt-2">
+            <option value="male">Masculino</option>
+            <option value="female">Feminino</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="theme-muted text-sm font-bold">Peso kg</label>
+          <input id="goalWeight" type="number" class="w-full theme-soft border rounded-2xl px-4 py-3 mt-2" placeholder="82">
+        </div>
+
+        <div>
+          <label class="theme-muted text-sm font-bold">Altura cm</label>
+          <input id="goalHeight" type="number" class="w-full theme-soft border rounded-2xl px-4 py-3 mt-2" placeholder="177">
+        </div>
+
+        <div>
+          <label class="theme-muted text-sm font-bold">Idade</label>
+          <input id="goalAge" type="number" class="w-full theme-soft border rounded-2xl px-4 py-3 mt-2" placeholder="25">
+        </div>
+
+        <div>
+          <label class="theme-muted text-sm font-bold">Atividade</label>
+          <select id="goalActivity" class="w-full theme-soft border rounded-2xl px-4 py-3 mt-2">
+            <option value="1.2">Sedentário</option>
+            <option value="1.375">Leve</option>
+            <option value="1.55" selected>Moderado</option>
+            <option value="1.725">Intenso</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="theme-muted text-sm font-bold">Meta calórica</label>
+          <input id="goalCalories" type="number" class="w-full theme-soft border rounded-2xl px-4 py-3 mt-2" placeholder="2200">
+        </div>
+
+        <div>
+          <label class="theme-muted text-sm font-bold">Proteína g</label>
+          <input id="goalProtein" type="number" class="w-full theme-soft border rounded-2xl px-4 py-3 mt-2" placeholder="180">
+        </div>
+
+        <div>
+          <label class="theme-muted text-sm font-bold">Carboidratos g</label>
+          <input id="goalCarbs" type="number" class="w-full theme-soft border rounded-2xl px-4 py-3 mt-2" placeholder="250">
+        </div>
+
+        <div>
+          <label class="theme-muted text-sm font-bold">Gorduras g</label>
+          <input id="goalFat" type="number" class="w-full theme-soft border rounded-2xl px-4 py-3 mt-2" placeholder="70">
+        </div>
       </div>
 
-      <div class="theme-card rounded-3xl p-8 border shadow-sm">
-        <div class="text-5xl mb-5">📊</div>
-        <h3 class="font-bold text-xl mb-3">Veja resultados</h3>
-        <p class="theme-muted leading-relaxed">Receba calorias, proteínas e observações nutricionais.</p>
+      <div class="grid grid-cols-2 gap-3 mt-6">
+        <button onclick="calculateGoals()" class="theme-soft border rounded-2xl py-4 font-black">
+          Calcular
+        </button>
+
+        <button onclick="saveGoals()" class="bg-green-500 text-white rounded-2xl py-4 font-black">
+          Salvar metas
+        </button>
       </div>
     </div>
-  </section>
+  </div>
 
   <footer class="theme-card border-t">
     <div class="max-w-6xl mx-auto px-6 py-8 text-center theme-muted text-sm">
@@ -439,27 +606,224 @@
     const previewImage = document.getElementById('previewImage');
     const themeToggle = document.getElementById('themeToggle');
 
+    const todayKey = new Date().toISOString().slice(0, 10);
+
+    let goals = {
+      calories: 2200,
+      protein: 180,
+      carbs: 250,
+      fat: 70,
+      objective: 'maintenance',
+      weight: '',
+      height: '',
+      age: '',
+      sex: 'male',
+      activity: '1.55'
+    };
+
+    let meals = [];
+
+    function userPrefix() {
+      return window.currentUser?.email || 'guest';
+    }
+
+    function goalsKey() {
+      return `nutrisnap_goals_${userPrefix()}`;
+    }
+
+    function mealsKey() {
+      return `nutrisnap_meals_${userPrefix()}_${todayKey}`;
+    }
+
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
 
       if (theme === 'dark') {
-        themeToggle.textContent = '☀️ Tema claro';
-        themeToggle.className = 'px-4 py-2 rounded-full border border-slate-700 bg-slate-900 text-white text-sm font-semibold shadow-sm hover:bg-slate-800 transition';
+        themeToggle.textContent = '☀️';
+        themeToggle.className = 'px-3 py-2 rounded-full border border-slate-700 bg-slate-900 text-white text-xs sm:text-sm font-semibold shadow-sm hover:bg-slate-800 transition';
       } else {
-        themeToggle.textContent = '🌙 Tema escuro';
-        themeToggle.className = 'px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-700 text-sm font-semibold shadow-sm hover:bg-slate-100 transition';
+        themeToggle.textContent = '🌙';
+        themeToggle.className = 'px-3 py-2 rounded-full border border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-semibold shadow-sm hover:bg-slate-100 transition';
       }
 
       localStorage.setItem('nutrisnap-theme', theme);
     }
 
-    const savedTheme = localStorage.getItem('nutrisnap-theme') || 'light';
+    const savedTheme = localStorage.getItem('nutrisnap-theme') || 'dark';
     applyTheme(savedTheme);
 
     themeToggle.addEventListener('click', () => {
       const currentTheme = document.documentElement.getAttribute('data-theme');
       applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
     });
+
+    function loadState() {
+      const storedGoals = localStorage.getItem(goalsKey());
+      const storedMeals = localStorage.getItem(mealsKey());
+
+      goals = storedGoals ? JSON.parse(storedGoals) : goals;
+      meals = storedMeals ? JSON.parse(storedMeals) : [];
+
+      fillGoalsForm();
+      renderDashboard();
+      renderMeals();
+    }
+
+    window.initializeNutriSnap = function () {
+      loadState();
+    };
+
+    function saveState() {
+      localStorage.setItem(goalsKey(), JSON.stringify(goals));
+      localStorage.setItem(mealsKey(), JSON.stringify(meals));
+    }
+
+    function fillGoalsForm() {
+      document.getElementById('goalObjective').value = goals.objective || 'maintenance';
+      document.getElementById('goalSex').value = goals.sex || 'male';
+      document.getElementById('goalWeight').value = goals.weight || '';
+      document.getElementById('goalHeight').value = goals.height || '';
+      document.getElementById('goalAge').value = goals.age || '';
+      document.getElementById('goalActivity').value = goals.activity || '1.55';
+      document.getElementById('goalCalories').value = goals.calories || 2200;
+      document.getElementById('goalProtein').value = goals.protein || 180;
+      document.getElementById('goalCarbs').value = goals.carbs || 250;
+      document.getElementById('goalFat').value = goals.fat || 70;
+    }
+
+    function totals() {
+      return meals.reduce((acc, meal) => {
+        acc.calories += Number(meal.calories || 0);
+        acc.protein += Number(meal.protein || 0);
+        acc.carbs += Number(meal.carbs || 0);
+        acc.fat += Number(meal.fat || 0);
+        return acc;
+      }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+    }
+
+    function pct(value, goal) {
+      if (!goal || goal <= 0) return 0;
+      return Math.min(100, Math.round((value / goal) * 100));
+    }
+
+    function renderDashboard() {
+      const t = totals();
+
+      const caloriesPercent = pct(t.calories, goals.calories);
+      const remaining = Math.max(0, goals.calories - t.calories);
+
+      document.getElementById('dashboardCalories').textContent = Math.round(t.calories);
+      document.getElementById('dashboardGoal').textContent = goals.calories;
+      document.getElementById('dashboardPercent').textContent = caloriesPercent;
+      document.getElementById('remainingCalories').textContent = remaining;
+      document.getElementById('calorieProgress').style.width = `${caloriesPercent}%`;
+
+      document.getElementById('proteinCurrent').textContent = Math.round(t.protein);
+      document.getElementById('proteinGoal').textContent = goals.protein;
+      document.getElementById('proteinProgress').style.width = `${pct(t.protein, goals.protein)}%`;
+
+      document.getElementById('carbsCurrent').textContent = Math.round(t.carbs);
+      document.getElementById('carbsGoal').textContent = goals.carbs;
+      document.getElementById('carbsProgress').style.width = `${pct(t.carbs, goals.carbs)}%`;
+
+      document.getElementById('fatCurrent').textContent = Math.round(t.fat);
+      document.getElementById('fatGoal').textContent = goals.fat;
+      document.getElementById('fatProgress').style.width = `${pct(t.fat, goals.fat)}%`;
+
+      document.getElementById('streakDays').textContent = meals.length > 0 ? 1 : 0;
+
+      let feedback = `Faltam ${remaining} kcal para sua meta.`;
+      let status = 'Você ainda pode registrar refeições hoje.';
+
+      if (t.calories === 0) {
+        feedback = 'Registre sua primeira refeição para iniciar o acompanhamento.';
+        status = 'Aguardando primeira análise.';
+      } else if (t.calories > goals.calories) {
+        feedback = `Você ultrapassou sua meta em ${Math.round(t.calories - goals.calories)} kcal.`;
+        status = 'Meta calórica ultrapassada.';
+      } else if (t.protein >= goals.protein) {
+        feedback = 'Meta de proteína atingida. Excelente consistência.';
+        status = 'Proteína concluída hoje.';
+      } else {
+        feedback = `Você ainda precisa de ${Math.max(0, Math.round(goals.protein - t.protein))}g de proteína.`;
+      }
+
+      document.getElementById('smartFeedback').textContent = feedback;
+      document.getElementById('dayStatus').textContent = status;
+    }
+
+    function renderMeals() {
+      const list = document.getElementById('mealsList');
+      const empty = document.getElementById('emptyMeals');
+
+      if (!meals.length) {
+        list.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+
+      list.innerHTML = meals.map(meal => `
+        <div class="theme-soft border rounded-3xl p-4 flex gap-4 items-start">
+          <img src="${meal.image || '/logo.png'}" class="w-20 h-20 rounded-2xl object-cover border border-slate-200">
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-xs theme-muted font-bold">${meal.type} • ${meal.time}</p>
+                <h4 class="font-black text-lg truncate">${meal.name}</h4>
+              </div>
+
+              <button onclick="deleteMeal('${meal.id}')" class="text-red-500 font-black text-sm">
+                Excluir
+              </button>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2 mt-3 text-center">
+              <div class="theme-card border rounded-2xl p-2">
+                <p class="text-orange-500 font-black">${Math.round(meal.calories || 0)}</p>
+                <p class="theme-muted text-[11px]">kcal</p>
+              </div>
+
+              <div class="theme-card border rounded-2xl p-2">
+                <p class="text-blue-500 font-black">${Math.round(meal.protein || 0)}g</p>
+                <p class="theme-muted text-[11px]">prot.</p>
+              </div>
+
+              <div class="theme-card border rounded-2xl p-2">
+                <p class="text-yellow-500 font-black">${Math.round(meal.carbs || 0)}g</p>
+                <p class="theme-muted text-[11px]">carb.</p>
+              </div>
+
+              <div class="theme-card border rounded-2xl p-2">
+                <p class="text-purple-500 font-black">${Math.round(meal.fat || 0)}g</p>
+                <p class="theme-muted text-[11px]">gord.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getMacroValue(item, keys) {
+      for (const key of keys) {
+        if (item && item[key] !== undefined && item[key] !== null && item[key] !== '') {
+          const parsed = parseFloat(String(item[key]).replace(',', '.'));
+          return Number.isFinite(parsed) ? parsed : 0;
+        }
+      }
+      return 0;
+    }
+
+    function estimateFallbackMacros(calories, protein) {
+      const proteinCalories = protein * 4;
+      const remainingCalories = Math.max(0, calories - proteinCalories);
+      return {
+        carbs: Math.round((remainingCalories * 0.65) / 4),
+        fat: Math.round((remainingCalories * 0.35) / 9)
+      };
+    }
 
     imageInput.addEventListener('change', () => {
       if (!window.currentUser) {
@@ -518,9 +882,26 @@
 
         const d = json.data;
 
+        const calories = Number(d.calorias_total || 0);
+        const protein = Number(d.proteinas_total || 0);
+
+        let carbs = 0;
+        let fat = 0;
+
+        if (Array.isArray(d.itens)) {
+          carbs = d.itens.reduce((sum, item) => sum + getMacroValue(item, ['carboidratos', 'carboidrato', 'carbs']), 0);
+          fat = d.itens.reduce((sum, item) => sum + getMacroValue(item, ['gorduras', 'gordura', 'fat']), 0);
+        }
+
+        if (!carbs && !fat && calories) {
+          const estimated = estimateFallbackMacros(calories, protein);
+          carbs = estimated.carbs;
+          fat = estimated.fat;
+        }
+
         document.getElementById('pratName').textContent = d.prato || '-';
-        document.getElementById('calorias').textContent = d.calorias_total || '-';
-        document.getElementById('proteinas').textContent = d.proteinas_total || '-';
+        document.getElementById('calorias').textContent = calories || '-';
+        document.getElementById('proteinas').textContent = protein || '-';
         document.getElementById('observacao').textContent = d.observacao || '-';
 
         const confiancaEl = document.getElementById('confianca');
@@ -557,6 +938,25 @@
           </div>
         `).join('');
 
+        const newMeal = {
+          id: crypto.randomUUID(),
+          name: d.prato || 'Refeição analisada',
+          type: document.getElementById('mealType').value,
+          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          calories,
+          protein,
+          carbs,
+          fat,
+          image: previewImage.src || '',
+          observation: d.observacao || '',
+          confidence: d.confianca || ''
+        };
+
+        meals.unshift(newMeal);
+        saveState();
+        renderDashboard();
+        renderMeals();
+
         document.getElementById('result').classList.remove('hidden');
 
       } catch (error) {
@@ -569,9 +969,101 @@
           button.innerText = 'Analisar Refeição';
         } else {
           button.disabled = true;
-          button.innerText = 'Entre com Google para analisar';
+          button.innerText = 'Entre com Google';
         }
       }
+    }
+
+    function deleteMeal(id) {
+      meals = meals.filter(meal => meal.id !== id);
+      saveState();
+      renderDashboard();
+      renderMeals();
+    }
+
+    function clearMeals() {
+      if (!confirm('Deseja limpar o histórico de hoje?')) return;
+      meals = [];
+      saveState();
+      renderDashboard();
+      renderMeals();
+    }
+
+    function openGoalsModal() {
+      fillGoalsForm();
+      document.getElementById('goalsModal').classList.remove('hidden');
+    }
+
+    function closeGoalsModal() {
+      document.getElementById('goalsModal').classList.add('hidden');
+    }
+
+    function calculateGoals() {
+      const sex = document.getElementById('goalSex').value;
+      const weight = Number(document.getElementById('goalWeight').value);
+      const height = Number(document.getElementById('goalHeight').value);
+      const age = Number(document.getElementById('goalAge').value);
+      const activity = Number(document.getElementById('goalActivity').value);
+      const objective = document.getElementById('goalObjective').value;
+
+      if (!weight || !height || !age) {
+        alert('Preencha peso, altura e idade.');
+        return;
+      }
+
+      let bmr = sex === 'male'
+        ? 10 * weight + 6.25 * height - 5 * age + 5
+        : 10 * weight + 6.25 * height - 5 * age - 161;
+
+      let calories = Math.round(bmr * activity);
+
+      if (objective === 'cutting') calories -= 400;
+      if (objective === 'bulking') calories += 300;
+
+      const protein = Math.round(weight * 2);
+      const fat = Math.round(weight * 0.8);
+      const carbs = Math.round((calories - protein * 4 - fat * 9) / 4);
+
+      document.getElementById('goalCalories').value = calories;
+      document.getElementById('goalProtein').value = protein;
+      document.getElementById('goalCarbs').value = Math.max(0, carbs);
+      document.getElementById('goalFat').value = fat;
+    }
+
+    function saveGoals() {
+      goals = {
+        objective: document.getElementById('goalObjective').value,
+        sex: document.getElementById('goalSex').value,
+        weight: document.getElementById('goalWeight').value,
+        height: document.getElementById('goalHeight').value,
+        age: document.getElementById('goalAge').value,
+        activity: document.getElementById('goalActivity').value,
+        calories: Number(document.getElementById('goalCalories').value || 2200),
+        protein: Number(document.getElementById('goalProtein').value || 180),
+        carbs: Number(document.getElementById('goalCarbs').value || 250),
+        fat: Number(document.getElementById('goalFat').value || 70)
+      };
+
+      saveState();
+      renderDashboard();
+      closeGoalsModal();
+    }
+
+    loadState();
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/service-worker.js')
+          .then((registration) => {
+            console.log('Service Worker registrado:', registration);
+          })
+          .catch((error) => {
+            console.log('Erro ao registrar Service Worker:', error);
+          });
+      });
     }
   </script>
 
